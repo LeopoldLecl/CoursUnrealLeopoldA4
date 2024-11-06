@@ -6,8 +6,10 @@
 #include "Arena/ArenaPlayerStart.h"
 #include "GameFramework/GameModeBase.h"
 #include "MatchGameMode.generated.h"
-
+class ASmashCharacter;
 class AArenaPlayerStart;
+
+
 
 UCLASS()
 class SMASHUE_API AMatchGameMode : public AGameModeBase
@@ -17,21 +19,26 @@ class SMASHUE_API AMatchGameMode : public AGameModeBase
 public:
 	virtual void BeginPlay() override;
 	
+	protected:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ASmashCharacter> SmashCharacterClassP0;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ASmashCharacter> SmashCharacterClassP1;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ASmashCharacter> SmashCharacterClassP2;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ASmashCharacter> SmashCharacterClassP3;
+
+
+	
 	private :
 	void FindPlayersStartActorsInArena(TArray<AArenaPlayerStart*>& ResultsActors);
+
+	TSubclassOf<ASmashCharacter> GetSmashCharacterClassFromInputType(EAutoReceiveInput::Type InputType) const;
 };
 
 
-inline void AMatchGameMode::BeginPlay()
-{
-	Super::BeginPlay();
-
-	TArray<AArenaPlayerStart*> PlayerStartsPoints;
-	FindPlayersStartActorsInArena(PlayerStartsPoints);
-
-	for (AArenaPlayerStart* PlayerStartPoint : PlayerStartsPoints)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, PlayerStartPoint->GetFName().ToString());
-	}
-}
 
