@@ -3,6 +3,22 @@
 
 #include "SmashCharacter.h"
 
+#include "SmashCharacterStateMachine.h"
+
+void ASmashCharacter::CreateStateMachine()
+{
+	StateMachine = NewObject<USmashCharacterStateMachine>(this);
+}
+
+void ASmashCharacter::InitStateMachine()
+{
+	if(StateMachine==nullptr)
+	{
+		return;
+	}
+	StateMachine->Init(this);
+}
+
 // Sets default values
 ASmashCharacter::ASmashCharacter()
 {
@@ -15,7 +31,8 @@ ASmashCharacter::ASmashCharacter()
 void ASmashCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	CreateStateMachine();
+	InitStateMachine();
 }
 
 // Called every frame
