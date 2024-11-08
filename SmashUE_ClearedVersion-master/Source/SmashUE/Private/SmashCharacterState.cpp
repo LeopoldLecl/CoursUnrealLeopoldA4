@@ -4,6 +4,7 @@
 #include "SmashCharacterState.h"
 
 #include "SmashCharacterStateID.h"
+#include "SmashCharacterStateMachine.h"
 
 // Sets default values
 USmashCharacterState::USmashCharacterState()
@@ -16,10 +17,19 @@ ESmashCharacterStateID USmashCharacterState::GetStateID()
 	return ESmashCharacterStateID::None;
 }
 
-void USmashCharacterState::StateInit(USmashCharacterState* InStateMachine)
+void USmashCharacterState::StateInit(USmashCharacterStateMachine* InStateMachine)
 {
-	
+	StateMachine = InStateMachine;
+	Character = InStateMachine->GetCharacter();
+	GEngine->AddOnScreenDebugMessage(
+		-1,
+		3.f,
+		FColor::Red,
+		FString::Printf(TEXT("Init State %d"),GetStateID())
+	);
 }
+
+
 
 
 

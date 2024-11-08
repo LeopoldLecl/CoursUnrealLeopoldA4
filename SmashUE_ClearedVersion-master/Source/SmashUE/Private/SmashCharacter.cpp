@@ -3,6 +3,7 @@
 
 #include "SmashCharacter.h"
 
+#include "SmashCharacterState.h"
 #include "SmashCharacterStateMachine.h"
 
 void ASmashCharacter::CreateStateMachine()
@@ -64,5 +65,11 @@ void ASmashCharacter::RotateMeshUsingOrientX() const
 	FRotator Rotation = GetMesh()->GetRelativeRotation();
 	Rotation.Yaw = -90.f * OrientX;
 	GetMesh()->SetRelativeRotation(Rotation);
+}
+
+void USmashCharacterState::StateInit(USmashCharacterState* InStateMachine)
+{
+	StateMachine = InStateMachine;
+	
 }
 
