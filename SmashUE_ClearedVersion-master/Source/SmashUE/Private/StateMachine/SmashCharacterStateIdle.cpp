@@ -1,6 +1,6 @@
 
 
-#include "SmashCharacterStateIdle.h"
+#include "StateMachine/SmashCharacterStateIdle.h"
 
 #include "SmashCharacter.h"
 

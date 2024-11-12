@@ -3,8 +3,9 @@
 
 #include "SmashCharacter.h"
 
-#include "SmashCharacterState.h"
-#include "SmashCharacterStateMachine.h"
+#include "EnhancedInputSubsystems.h"
+#include "Kismet/GameplayStatics.h"
+#include "StateMachine/SmashCharacterStateMachine.h"
 
 void ASmashCharacter::CreateStateMachine()
 {
@@ -54,12 +55,7 @@ void ASmashCharacter::Tick(float DeltaTime)
 	RotateMeshUsingOrientX();
 }
 
-// Called to bind functionality to input
-void ASmashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-}
 
 float ASmashCharacter::GetOrientX() const
 {
@@ -91,6 +87,34 @@ void ASmashCharacter::PlayIdleAnimMontage()
 void ASmashCharacter::PlayRunAnimMontage()
 {
 	PlayAnimMontage(RunAnimMontage);
+}
+
+void ASmashCharacter::SetupMappingContextIntoController() const
+{
+	APlayerController* PlayerController = Cast<APlayerController>(Controller);
+	if(PlayerController== nullptr)
+	{
+		return;
+	}
+
+	ULocalPlayer* Player = PlayerController->GetLocalPlayer();
+	if(Player == nullptr)
+	{
+		return;
+	}
+
+	UEnhancedInputLocalPlayerSubsystem* InputSystem = Player->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	if(InputSystem == nullptr)
+	{
+		return;
+	}
+	InputSystem->AddMappingContext(InputMappingContext,0);
+}
+
+void ASmashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	SetupMappingContextIntoController();
 }
 
 // void USmashCharacterState::StateInit(USmashCharacterState* InStateMachine)

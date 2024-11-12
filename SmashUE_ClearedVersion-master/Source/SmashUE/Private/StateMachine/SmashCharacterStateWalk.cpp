@@ -1,4 +1,4 @@
-#include "SmashCharacterStateWalk.h"
+#include "StateMachine/SmashCharacterStateWalk.h"
 
 #include "SmashCharacter.h"
 #include "GeometryCollection/GeometryCollectionParticlesData.h"

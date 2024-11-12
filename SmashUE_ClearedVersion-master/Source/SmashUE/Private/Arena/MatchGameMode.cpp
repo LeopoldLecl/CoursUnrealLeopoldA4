@@ -1,12 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MatchGameMode.h"
+#include "Arena/MatchGameMode.h"
 
-#include "ArenaSettings.h"
+#include "Arena/ArenaSettings.h"
 #include "SmashCharacter.h"
+#include "SmashCharacterSettings.h"
 #include "Arena/ArenaPlayerStart.h"
 #include "Kismet/GameplayStatics.h"
+
 
 void AMatchGameMode::BeginPlay()
 {
@@ -31,6 +33,27 @@ void AMatchGameMode::BeginPlay()
 		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Cyan, PlayerStartPoint->GetFName().ToString());
 	}
 }
+
+USmashCharacterInputData* AMatchGameMode::LoadInputDataFromConfig()
+{
+	const USmashCharacterSettings* CharacterSettings = GetDefault<USmashCharacterSettings>();
+	if(CharacterSettings==nullptr)
+	{
+		return nullptr;
+	}
+	return CharacterSettings->InputData.LoadSynchronous();
+}
+
+UInputMappingContext* AMatchGameMode::LoadInputMappingContextFromConfig()
+{
+	const USmashCharacterSettings* CharacterSettings = GetDefault<USmashCharacterSettings>();
+	if(CharacterSettings==nullptr)
+	{
+		return nullptr;
+	}
+	return CharacterSettings->InputMappingContext.LoadSynchronous();
+}
+
 
 void AMatchGameMode::FindPlayersStartActorsInArena(TArray<AArenaPlayerStart*>& ResultsActors)
 {
@@ -75,6 +98,10 @@ void AMatchGameMode::SpawnCharacters(const TArray<AArenaPlayerStart*>& SpawnPoin
 {
 	for (AArenaPlayerStart* SpawnPoint : SpawnPoints)
 	{
+		USmashCharacterInputData* InputData = LoadInputDataFromConfig();
+		UInputMappingContext* InputMappingContext = LoadInputMappingContextFromConfig();
+
+		
 		EAutoReceiveInput::Type InputType = SpawnPoint->AutoReceiveInput.GetValue();
 		TSubclassOf<ASmashCharacter> SmashCharacterClass = GetSmashCharacterClassFromInputType(InputType);
 		if (SmashCharacterClass == nullptr)
@@ -92,6 +119,8 @@ void AMatchGameMode::SpawnCharacters(const TArray<AArenaPlayerStart*>& SpawnPoin
 			continue;
 		}
 
+		NewCharacter->InputData = InputData;
+		NewCharacter->InputMappingContext = InputMappingContext;
 		NewCharacter->AutoPossessPlayer = SpawnPoint->AutoReceiveInput;
 		NewCharacter->SetOrientX(SpawnPoint->GetStartOrientX());
 		NewCharacter->FinishSpawning(SpawnPoint->GetTransform());

@@ -1,5 +1,5 @@
 
-#include "SmashCharacterStateRun.h"
+#include "StateMachine/SmashCharacterStateRun.h"
 
 #include "SmashCharacter.h"
 #include "GeometryCollection/GeometryCollectionParticlesData.h"

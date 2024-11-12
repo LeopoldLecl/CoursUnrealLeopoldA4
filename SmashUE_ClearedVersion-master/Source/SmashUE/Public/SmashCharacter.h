@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "SmashCharacter.generated.h"
 
+class USmashCharacterInputData;
+class UInputMappingContext;
 class USmashCharacterStateMachine;
 class UAnimMontage;
 UCLASS()
@@ -71,9 +73,9 @@ protected:
 	UAnimMontage* RunAnimMontage;
 
 
+#pragma region StateMachine et player stats
+public:	
 
-	
-public:
 	UPROPERTY(EditDefaultsOnly, Category="Player Stats")
 	float MoveSpeedMax = 600.f;
 	UPROPERTY(EditDefaultsOnly, Category="Player Stats")
@@ -81,5 +83,20 @@ public:
 	void PlayWalkAnimMontage();
 	void PlayIdleAnimMontage();
 	void PlayRunAnimMontage();
+#pragma endregion
+
+	#pragma region Input data / mapping context
+
+protected:
+	void SetupMappingContextIntoController() const;
 	
+public:
+
+	UPROPERTY()
+	TObjectPtr<UInputMappingContext> InputMappingContext;
+
+	UPROPERTY()
+	TObjectPtr<USmashCharacterInputData> InputData;
+	
+#pragma endregion
 };

@@ -10,22 +10,21 @@
 /**
  * 
  */
-UCLASS(Config = Game,DefaultConfig,meta = (DisplayName = "Smash Arena Settings"))
+UCLASS(Config = Game, DefaultConfig, meta = (DisplayName = "Smash Arena Settings"))
 class SMASHUE_API UArenaSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
 
-
-	public:
-	UPROPERTY(config, EditAnywhere,Category="Characters")
+public:
+	UPROPERTY(config, EditAnywhere, Category="Characters")
 	TSubclassOf<ASmashCharacter> ASmashCharacterClassP0;
-	
-	UPROPERTY(config, EditAnywhere,Category="Characters")
+
+	UPROPERTY(config, EditAnywhere, Category="Characters")
 	TSubclassOf<ASmashCharacter> ASmashCharacterClassP1;
-	
-	UPROPERTY(config, EditAnywhere,Category="Characters")
+
+	UPROPERTY(config, EditAnywhere, Category="Characters")
 	TSubclassOf<ASmashCharacter> ASmashCharacterClassP2;
-	
-	UPROPERTY(config, EditAnywhere,Category="Characters")
+
+	UPROPERTY(config, EditAnywhere, Category="Characters")
 	TSubclassOf<ASmashCharacter> ASmashCharacterClassP3;
 };

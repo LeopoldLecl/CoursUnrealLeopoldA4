@@ -3,8 +3,8 @@
 
 #include "SmashCharacterState.h"
 
-#include "SmashCharacterStateID.h"
-#include "SmashCharacterStateMachine.h"
+#include "StateMachine/SmashCharacterStateID.h"
+#include "StateMachine/SmashCharacterStateMachine.h"
 
 // Sets default values
 USmashCharacterState::USmashCharacterState()
