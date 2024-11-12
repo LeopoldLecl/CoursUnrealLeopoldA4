@@ -67,9 +67,8 @@ void ASmashCharacter::RotateMeshUsingOrientX() const
 	GetMesh()->SetRelativeRotation(Rotation);
 }
 
-void USmashCharacterState::StateInit(USmashCharacterState* InStateMachine)
-{
-	StateMachine = InStateMachine;
-	
-}
+// void USmashCharacterState::StateInit(USmashCharacterState* InStateMachine)
+// {
+// 		StateMachine = InStateMachine;
+// }
 
