@@ -88,6 +88,11 @@ void ASmashCharacter::PlayIdleAnimMontage()
 	PlayAnimMontage(IdleAnimMontage);
 }
 
+void ASmashCharacter::PlayRunAnimMontage()
+{
+	PlayAnimMontage(RunAnimMontage);
+}
+
 // void USmashCharacterState::StateInit(USmashCharacterState* InStateMachine)
 // {
 // 		StateMachine = InStateMachine;

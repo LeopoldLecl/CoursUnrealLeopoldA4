@@ -67,6 +67,8 @@ protected:
 	UAnimMontage* IdleAnimMontage;
 	UPROPERTY(EditDefaultsOnly, Category="Animation")
 	UAnimMontage* WalkAnimMontage;
+	UPROPERTY(EditDefaultsOnly, Category="Animation")
+	UAnimMontage* RunAnimMontage;
 
 
 
@@ -74,7 +76,10 @@ protected:
 public:
 	UPROPERTY(EditDefaultsOnly, Category="Player Stats")
 	float MoveSpeedMax = 600.f;
+	UPROPERTY(EditDefaultsOnly, Category="Player Stats")
+	float RunMoveSpeedMax = 1200.f;
 	void PlayWalkAnimMontage();
 	void PlayIdleAnimMontage();
+	void PlayRunAnimMontage();
 	
 };
