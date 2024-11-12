@@ -20,7 +20,7 @@ class SMASHUE_API ASmashCharacter : public ACharacter
 	void InitStateMachine();
 
 	protected:
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<USmashCharacterStateMachine> StateMachine;
 #pragma endregion
 	
