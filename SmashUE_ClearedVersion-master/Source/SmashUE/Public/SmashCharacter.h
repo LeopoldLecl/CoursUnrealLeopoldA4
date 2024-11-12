@@ -7,6 +7,7 @@
 #include "SmashCharacter.generated.h"
 
 class USmashCharacterStateMachine;
+class UAnimMontage;
 UCLASS()
 class SMASHUE_API ASmashCharacter : public ACharacter
 {
@@ -18,6 +19,8 @@ class SMASHUE_API ASmashCharacter : public ACharacter
 	void CreateStateMachine();
 
 	void InitStateMachine();
+
+	void TickStateMachine(float DeltaTime) const;
 
 	protected:
 	UPROPERTY(BlueprintReadOnly)
@@ -57,5 +60,21 @@ protected:
 	void RotateMeshUsingOrientX() const;
 
 #pragma endregion
+	
+	private:
+
+	UPROPERTY(EditDefaultsOnly, Category="Animation")
+	UAnimMontage* IdleAnimMontage;
+	UPROPERTY(EditDefaultsOnly, Category="Animation")
+	UAnimMontage* WalkAnimMontage;
+
+
+
+	
+public:
+	UPROPERTY(EditDefaultsOnly, Category="Player Stats")
+	float MoveSpeedMax = 600.f;
+	void PlayWalkAnimMontage();
+	void PlayIdleAnimMontage();
 	
 };

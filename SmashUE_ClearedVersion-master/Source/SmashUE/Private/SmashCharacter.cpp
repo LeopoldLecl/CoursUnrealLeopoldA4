@@ -20,6 +20,15 @@ void ASmashCharacter::InitStateMachine()
 	StateMachine->Init(this);
 }
 
+void ASmashCharacter::TickStateMachine(float DeltaTime) const
+{
+	if(StateMachine==nullptr)
+	{
+		return;
+	}
+	StateMachine->Tick(DeltaTime);
+}
+
 // Sets default values
 ASmashCharacter::ASmashCharacter()
 {
@@ -34,12 +43,14 @@ void ASmashCharacter::BeginPlay()
 	Super::BeginPlay();
 	CreateStateMachine();
 	InitStateMachine();
+
 }
 
 // Called every frame
 void ASmashCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	TickStateMachine(DeltaTime);
 	RotateMeshUsingOrientX();
 }
 
@@ -65,6 +76,16 @@ void ASmashCharacter::RotateMeshUsingOrientX() const
 	FRotator Rotation = GetMesh()->GetRelativeRotation();
 	Rotation.Yaw = -90.f * OrientX;
 	GetMesh()->SetRelativeRotation(Rotation);
+}
+
+void ASmashCharacter::PlayWalkAnimMontage()
+{
+	PlayAnimMontage(WalkAnimMontage);
+}
+
+void ASmashCharacter::PlayIdleAnimMontage()
+{
+	PlayAnimMontage(IdleAnimMontage);
 }
 
 // void USmashCharacterState::StateInit(USmashCharacterState* InStateMachine)

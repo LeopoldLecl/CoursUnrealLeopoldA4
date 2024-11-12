@@ -19,4 +19,6 @@ class SMASHUE_API USmashCharacterStateWalk : public USmashCharacterState
 	virtual void StateEnter(ESmashCharacterStateID PreviousStateID) override;
 
 	virtual void StateExit(ESmashCharacterStateID NextStateID) override;
+
+	virtual void StateTick(float DeltaTime) override;
 };

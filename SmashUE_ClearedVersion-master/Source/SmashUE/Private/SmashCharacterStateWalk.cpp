@@ -1,5 +1,8 @@
 #include "SmashCharacterStateWalk.h"
 
+#include "SmashCharacter.h"
+#include "GeometryCollection/GeometryCollectionParticlesData.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ESmashCharacterStateID USmashCharacterStateWalk::GetStateID()
 {
@@ -9,6 +12,8 @@ ESmashCharacterStateID USmashCharacterStateWalk::GetStateID()
 void USmashCharacterStateWalk::StateEnter(ESmashCharacterStateID PreviousStateID)
 {
 	Super::StateEnter(PreviousStateID);
+
+	Character->PlayWalkAnimMontage();
 
 	GEngine->AddOnScreenDebugMessage(
 		-1,
@@ -28,4 +33,28 @@ void USmashCharacterStateWalk::StateExit(ESmashCharacterStateID NextStateID)
 		FColor::Red,
 		TEXT("Exit StateWalk")
 	);
+}
+
+void USmashCharacterStateWalk::StateTick(float DeltaTime)
+{
+	Super::StateTick(DeltaTime);
+
+	if (Character && Character->GetCharacterMovement())
+	{
+		FVector CurrentVelocity = Character->GetVelocity();
+		float CurrentSpeed = CurrentVelocity.Size();
+
+		if (CurrentSpeed < Character->MoveSpeedMax)
+		{
+			FVector Direction = Character->GetActorForwardVector();
+			Character->AddMovementInput(Direction, 1.0f);
+		}
+
+	}
+	GEngine->AddOnScreenDebugMessage(
+		-1,
+		3.f,
+		FColor::Green,
+		TEXT("Tick State Walk")
+		);
 }
