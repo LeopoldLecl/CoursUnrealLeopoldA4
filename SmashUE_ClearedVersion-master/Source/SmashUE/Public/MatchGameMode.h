@@ -6,6 +6,9 @@
 #include "Arena/ArenaPlayerStart.h"
 #include "GameFramework/GameModeBase.h"
 #include "MatchGameMode.generated.h"
+
+class UInputMappingContext;
+class USmashCharacterInputData;
 class ASmashCharacter;
 class AArenaPlayerStart;
 
@@ -23,22 +26,16 @@ public:
 
 	UPROPERTY()
 	TArray<ASmashCharacter*> CharactersInsideArena;
-	
-	// UPROPERTY(EditAnywhere)
-	// TSubclassOf<ASmashCharacter> SmashCharacterClassP0;
-	//
-	// UPROPERTY(EditAnywhere)
-	// TSubclassOf<ASmashCharacter> SmashCharacterClassP1;
-	//
-	// UPROPERTY(EditAnywhere)
-	// TSubclassOf<ASmashCharacter> SmashCharacterClassP2;
-	//
-	// UPROPERTY(EditAnywhere)
-	// TSubclassOf<ASmashCharacter> SmashCharacterClassP3;
-
 
 	
 	private :
+
+	USmashCharacterInputData* LoadInputDataFromConfig();
+
+	UInputMappingContext* LoadInputMappingContextFromConfig();
+
+	
+	
 	void FindPlayersStartActorsInArena(TArray<AArenaPlayerStart*>& ResultsActors);
 
 	void SpawnCharacters(const TArray<AArenaPlayerStart*>& SpawnPoints);

@@ -2,6 +2,7 @@
 
 
 #include "SmashCharacter.h"
+#include "EnhancedInputSubsystems.h"
 
 #include "SmashCharacterState.h"
 #include "SmashCharacterStateMachine.h"
@@ -59,6 +60,7 @@ void ASmashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	SetupMappingContextIntoController();
 }
 
 float ASmashCharacter::GetOrientX() const
@@ -91,6 +93,20 @@ void ASmashCharacter::PlayIdleAnimMontage()
 void ASmashCharacter::PlayRunAnimMontage()
 {
 	PlayAnimMontage(RunAnimMontage);
+}
+
+void ASmashCharacter::SetupMappingContextIntoController()
+{
+	APlayerController* PlayerController = Cast<APlayerController>(Controller);
+	if(PlayerController == nullptr) return;
+
+	ULocalPlayer* Player = PlayerController->GetLocalPlayer();
+	if(Player == nullptr) return;
+
+	UEnhancedInputLocalPlayerSubsystem* InputSystem = Player->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	if(InputSystem == nullptr) return;
+
+	InputSystem->AddMappingContext(InputMappingContext,0);
 }
 
 // void USmashCharacterState::StateInit(USmashCharacterState* InStateMachine)

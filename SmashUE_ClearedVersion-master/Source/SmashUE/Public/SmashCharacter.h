@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "SmashCharacter.generated.h"
 
+class USmashCharacterInputData;
+class UInputMappingContext;
 class USmashCharacterStateMachine;
 class UAnimMontage;
 UCLASS()
@@ -60,7 +62,9 @@ protected:
 	void RotateMeshUsingOrientX() const;
 
 #pragma endregion
-	
+
+
+#pragma region Movement / Anim / State Machine
 	private:
 
 	UPROPERTY(EditDefaultsOnly, Category="Animation")
@@ -81,5 +85,24 @@ public:
 	void PlayWalkAnimMontage();
 	void PlayIdleAnimMontage();
 	void PlayRunAnimMontage();
+
+#pragma endregion
+
+
+#pragma region InputData / Mapping context
+
+	public:
+	UPROPERTY()
+	TObjectPtr<UInputMappingContext> InputMappingContext;
+
+	UPROPERTY()
+	TObjectPtr<USmashCharacterInputData> InputData;
+
+	protected:
+	void SetupMappingContextIntoController();
+
+
+	
+#pragma endregion
 	
 };
