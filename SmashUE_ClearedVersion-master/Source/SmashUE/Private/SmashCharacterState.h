@@ -6,6 +6,7 @@
 #include "SmashCharacterStateID.h"
 #include "GameFramework/Actor.h"
 #include "SmashCharacterState.generated.h"
+class USmashCharacterSettings;
 class ASmashCharacter;
 class USmashCharacterStateMachine;
 
@@ -27,6 +28,7 @@ public:
 	virtual void StateExit(ESmashCharacterStateID NextStateID);
 
 	virtual void StateTick(float DeltaTime);
+
 	
 
 	protected:
@@ -34,4 +36,7 @@ public:
 	TObjectPtr<ASmashCharacter> Character;
 	UPROPERTY()
 	TObjectPtr<USmashCharacterStateMachine> StateMachine;
+	UPROPERTY();
+	TObjectPtr<USmashCharacterSettings> CharacterSettings;
+	
 };

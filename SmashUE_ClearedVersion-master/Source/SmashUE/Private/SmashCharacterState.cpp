@@ -17,6 +17,8 @@ ESmashCharacterStateID USmashCharacterState::GetStateID()
 	return ESmashCharacterStateID::None;
 }
 
+
+
 void USmashCharacterState::StateInit(USmashCharacterStateMachine* InStateMachine)
 {
 	StateMachine = InStateMachine;
