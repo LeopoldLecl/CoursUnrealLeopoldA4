@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SmashCharacterSettings.h"
 #include "SmashCharacterStateID.h"
 #include "GameFramework/Actor.h"
 #include "SmashCharacterState.generated.h"
@@ -21,7 +22,7 @@ public:
 
 	virtual ESmashCharacterStateID GetStateID();
 
-	virtual void StateInit(USmashCharacterStateMachine* InStateMachine);
+	virtual void StateInit(USmashCharacterStateMachine* InStateMachine,const USmashCharacterSettings* InCharacterSettings);
 
 	virtual void StateEnter(ESmashCharacterStateID PreviousStateID);
 
