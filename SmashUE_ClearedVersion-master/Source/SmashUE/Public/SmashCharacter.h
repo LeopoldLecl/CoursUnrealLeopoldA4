@@ -74,6 +74,10 @@ protected:
 	UAnimMontage* WalkAnimMontage;
 	UPROPERTY(EditDefaultsOnly, Category="Animation")
 	UAnimMontage* RunAnimMontage;
+	UPROPERTY(EditDefaultsOnly, Category="Animation")
+	UAnimMontage* JumpAnimMontage;
+	UPROPERTY(EditDefaultsOnly, Category="Animation")
+	UAnimMontage* FallAnimMontage;
 
 
 
@@ -86,6 +90,8 @@ public:
 	void PlayWalkAnimMontage();
 	void PlayIdleAnimMontage();
 	void PlayRunAnimMontage();
+	void PlayJumpAnimMontage();
+	void PlayFallAnimMontage();
 
 #pragma endregion
 
@@ -112,19 +118,23 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInputMoveXEvent, float, InputMoveX)
 	
 	public:
 	float GetInputMoveX() const;
+	float GetInputMoveY() const;
 
 	UPROPERTY()
 	FInputMoveXEvent InputMoveXFastEvent;
+	FInputMoveXEvent InputJumpEvent;
 
 protected:
 	UPROPERTY()
 	float InputMoveX = 0.f;
+	bool InputJump = false;
 
 	private:
 	void OnInputMoveXFast(const FInputActionValue& InputActionValue);
 	void BindInputMoveXAxisAndActions(UEnhancedInputComponent* EnhancedInputComponent);
 	
 	void OnInputMoveX(const FInputActionValue& InputActionValue);
+	void OnInputJump(const FInputActionValue& InputActionValue);
 
 	
 #pragma endregion

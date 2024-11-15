@@ -101,6 +101,16 @@ void ASmashCharacter::PlayRunAnimMontage()
 	PlayAnimMontage(RunAnimMontage);
 }
 
+void ASmashCharacter::PlayJumpAnimMontage()
+{
+	PlayAnimMontage(JumpAnimMontage);
+}
+
+void ASmashCharacter::PlayFallAnimMontage()
+{
+	PlayAnimMontage(FallAnimMontage);
+}
+
 void ASmashCharacter::SetupMappingContextIntoController()
 {
 	APlayerController* PlayerController = Cast<APlayerController>(Controller);
@@ -118,6 +128,11 @@ void ASmashCharacter::SetupMappingContextIntoController()
 float ASmashCharacter::GetInputMoveX() const
 {
 	return  InputMoveX;
+}
+
+float ASmashCharacter::GetInputMoveY() const
+{
+	return InputJump;
 }
 
 void ASmashCharacter::OnInputMoveXFast(const FInputActionValue& InputActionValue)
@@ -160,7 +175,15 @@ void ASmashCharacter::BindInputMoveXAxisAndActions(UEnhancedInputComponent* Enha
 			&ASmashCharacter::OnInputMoveXFast);
 	}
 
-
+	if(InputData->InputActionJump)
+	{
+		EnhancedInputComponent->BindAction(
+			InputData->InputActionJump,
+			ETriggerEvent::Started,
+			this,
+			&ASmashCharacter::OnInputJump
+		);
+	}
 
 	
 }
@@ -170,8 +193,10 @@ void ASmashCharacter::OnInputMoveX(const FInputActionValue& InputActionValue)
 		InputMoveX = InputActionValue.Get<float>();
 }
 
-// void USmashCharacterState::StateInit(USmashCharacterState* InStateMachine)
-// {
-// 		StateMachine = InStateMachine;
-// }
+void ASmashCharacter::OnInputJump(const FInputActionValue& InputActionValue)
+{
+	InputJump = InputActionValue.Get<bool>();
+	InputJumpEvent.Broadcast(InputJump);
+}
+
 

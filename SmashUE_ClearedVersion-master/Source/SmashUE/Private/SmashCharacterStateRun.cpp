@@ -8,6 +8,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 
+void USmashCharacterStateRun::OnInputJump(float InputJump)
+{
+	StateMachine->ChangeState(ESmashCharacterStateID::Jump);
+}
+
 ESmashCharacterStateID USmashCharacterStateRun::GetStateID()
 {
 	return ESmashCharacterStateID::Run;
@@ -18,7 +23,7 @@ void USmashCharacterStateRun::StateEnter(ESmashCharacterStateID PreviousStateID)
 	Super::StateEnter(PreviousStateID);
 
 	Character->PlayRunAnimMontage();
-
+	Character->GetCharacterMovement()->MaxWalkSpeed = Character->RunMoveSpeedMax;
 	GEngine->AddOnScreenDebugMessage(
 		-1,
 		3.f,
