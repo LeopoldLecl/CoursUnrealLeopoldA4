@@ -13,6 +13,21 @@ class SMASHUE_API USmashCharacterStateFall : public USmashCharacterState
 	GENERATED_BODY()
 
 	public:
+
+	UPROPERTY(EditDefaultsOnly, Category="Fall")
+	float FallHorizontalMoveSpeed = 400.f;
+	UPROPERTY(EditDefaultsOnly, Category="Fall")
+	float FallVAirControl = 1.f;
+	UPROPERTY(EditDefaultsOnly, Category="Fall")
+	float FallGravityScale = 9.8f;
+	UPROPERTY(EditDefaultsOnly, Category="Fall")
+	float FallFastGravityScale = 20.f;
+	
+
+
+
+
+	
 	virtual ESmashCharacterStateID GetStateID() override;
 
 	UFUNCTION()

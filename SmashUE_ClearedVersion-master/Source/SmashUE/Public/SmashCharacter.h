@@ -24,8 +24,9 @@ class SMASHUE_API ASmashCharacter : public ACharacter
 	void InitStateMachine();
 
 	void TickStateMachine(float DeltaTime) const;
+	bool IsFallingFast() const;
 
-	protected:
+protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<USmashCharacterStateMachine> StateMachine;
 #pragma endregion

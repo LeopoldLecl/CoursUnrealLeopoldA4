@@ -4,6 +4,7 @@
 #include "SmashCharacter.h"
 #include "SmashCharacterSettings.h"
 #include "SmashCharacterStateMachine.h"
+#include "SmashCharacterStateWalk.h"
 #include "GeometryCollection/GeometryCollectionParticlesData.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -30,6 +31,9 @@ void USmashCharacterStateRun::StateEnter(ESmashCharacterStateID PreviousStateID)
 		FColor::Green,
 		TEXT("Enter StateRun")
 	);
+
+	Character->InputJumpEvent.AddDynamic(this,&USmashCharacterStateRun::OnInputJump);
+
 }
 
 void USmashCharacterStateRun::StateExit(ESmashCharacterStateID NextStateID)
@@ -42,6 +46,9 @@ void USmashCharacterStateRun::StateExit(ESmashCharacterStateID NextStateID)
 		FColor::Red,
 		TEXT("Exit StateRun")
 	);
+
+	Character->InputJumpEvent.RemoveDynamic(this,&USmashCharacterStateRun::OnInputJump);
+
 }
 
 void USmashCharacterStateRun::StateTick(float DeltaTime)
