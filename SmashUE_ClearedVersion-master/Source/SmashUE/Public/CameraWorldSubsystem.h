@@ -32,7 +32,7 @@ public:
 	TObjectPtr<UCameraComponent> CameraMain;
 
 	UPROPERTY()
-	TArray<AActor*> FollowTargets;
+	TArray<UObject*> FollowTargets;
 
 	void TickUpdateCameraPosition(float DeltaTime);
 

@@ -1,5 +1,5 @@
 #include "CameraWorldSubsystem.h"
-
+#include "CameraFollowTarget.h"
 #include "EngineUtils.h"
 
 void UCameraWorldSubsystem::PostInitialize()
@@ -38,8 +38,8 @@ void UCameraWorldSubsystem::TickUpdateCameraPosition(float DeltaTime)
 
 FVector UCameraWorldSubsystem::CalculateAveragePositionBetweenTargets()
 {
-	float FixedY = CameraMain->GetComponentLocation().Y;
-	
+	float FixedY = CameraMain ? CameraMain->GetComponentLocation().Y : 0.0f;
+
 	if (FollowTargets.Num() == 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("CalculateAveragePositionBetweenTargets: Aucun acteur dans FollowTargets."));
@@ -47,18 +47,32 @@ FVector UCameraWorldSubsystem::CalculateAveragePositionBetweenTargets()
 	}
 
 	FVector SumPosition = FVector::ZeroVector;
+	int32 ValidTargetsCount = 0;
 
-	for (AActor* Player : FollowTargets)
+	for (UObject* Target : FollowTargets)
 	{
-		if (Player) 
+		if (Target && Target->GetClass()->ImplementsInterface(UCameraFollowTarget::StaticClass()))
 		{
-			SumPosition += Player->GetActorLocation();
+			// Cast implicite vers l'interface pour accéder aux fonctions
+			ICameraFollowTarget* Followable = Cast<ICameraFollowTarget>(Target);
+
+			if (Followable && Followable->IsFollowable())
+			{
+				SumPosition += Followable->GetFollowPosition();
+				ValidTargetsCount++;
+			}
 		}
 	}
-	FVector AvecragePos = SumPosition / FollowTargets.Num();
-	AvecragePos.Y = FixedY;
-	return AvecragePos;
-	
+
+	if (ValidTargetsCount == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CalculateAveragePositionBetweenTargets: Aucun acteur valide trouvé."));
+		return FVector::ZeroVector;
+	}
+
+	FVector AveragePos = SumPosition / ValidTargetsCount;
+	AveragePos.Y = FixedY; // Fixer la composante Y
+	return AveragePos;
 }
 
 UCameraComponent* UCameraWorldSubsystem::FindCameraByTag(const FName& Tag) const
