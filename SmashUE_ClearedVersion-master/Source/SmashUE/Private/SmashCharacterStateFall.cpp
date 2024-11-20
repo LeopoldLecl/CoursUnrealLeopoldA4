@@ -40,7 +40,7 @@ void USmashCharacterStateFall::StateTick(float DeltaTime)
 		Character->GetCharacterMovement()->GravityScale = FallFastGravityScale;
 	}
 
-	if (Character->GetCharacterMovement()->Velocity.Z <= 0.f)
+	if (Character->GetCharacterMovement()->IsMovingOnGround())
 	{
 		StateMachine->ChangeState(ESmashCharacterStateID::Idle);
 	}
