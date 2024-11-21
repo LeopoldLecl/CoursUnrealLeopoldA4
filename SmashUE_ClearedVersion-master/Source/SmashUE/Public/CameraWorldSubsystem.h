@@ -29,8 +29,14 @@ public:
 
 	void RemoveFollowTarget(AActor* FollowTarget);
 	
+	FVector CalculateAveragePositionBetweenTargets();
+
+	float CalculateGreatestDistanceBetweenTargets();
+	
 	UPROPERTY()
 	TArray<UObject*> FollowTargets;
+
+	
 #pragma endregion
 
 #pragma region Misc
@@ -42,14 +48,15 @@ public:
 	
 	void TickUpdateCameraPosition(float DeltaTime);
 
+	void TickUpdateCameraZoom(float DeltaTime);
 
 
-	FVector CalculateAveragePositionBetweenTargets();
 
 	UCameraComponent* FindCameraByTag(const FName& Tag) const;
 
 #pragma endregion
 
+#pragma region Bounds
 
 	UPROPERTY()
 	FVector2D CameraBoundsMin;
@@ -69,4 +76,30 @@ public:
 	void GetViewportBounds(FVector2D& OutViewportBoundsMin,FVector2D& OutViewportBoundsMax);
 
 	FVector CalculateWorldPositionFromViewPortPosition(const FVector2d& ViewPortPosition);
+
+#pragma endregion
+
+#pragma region Camera Zoom
+
+	protected:
+	UPROPERTY()
+	float CameraZoomYMin = 0.f;
+
+	UPROPERTY()
+	float CameraZoomYMax = 0.f;
+
+	UPROPERTY()
+	float CameraZoomDistanceBetweenTargetsMin = 300.f;
+
+	UPROPERTY()
+	float CameraZoomDistanceBetweenTargetsMax = 1500.f;
+
+	UFUNCTION()
+	void InitCameraZoomParameters();
+
+	float InverseLerp(float Start, float End, float Value);
+
+	
+#pragma endregion
+
 };
