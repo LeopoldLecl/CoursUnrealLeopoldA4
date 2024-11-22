@@ -2,6 +2,7 @@
 #include "CameraFollowTarget.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
+#include "CameraSettings.h"
 
 void UCameraWorldSubsystem::PostInitialize()
 {
@@ -13,7 +14,8 @@ void UCameraWorldSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	Super::OnWorldBeginPlay(InWorld);
 
 	CameraMain = FindCameraByTag(TEXT("CameraMain"));
-
+	CameraSettings = GetDefault<UCameraSettings>();
+		
 	AActor* CameraBoundsActor = FindCameraBoundsActor();
 	if (CameraBoundsActor)
 	{
@@ -32,6 +34,7 @@ void UCameraWorldSubsystem::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	TickUpdateCameraPosition(DeltaTime);
 	TickUpdateCameraZoom(DeltaTime);
+	TickUpdateDampingCameraPosition(DeltaTime);
 }
 
 void UCameraWorldSubsystem::AddFollowTarget(AActor* FollowTarget)
@@ -50,8 +53,9 @@ void UCameraWorldSubsystem::TickUpdateCameraPosition(float DeltaTime)
 	
 	TargetPos.X = FMath::Clamp(TargetPos.X, CameraBoundsMin.X, CameraBoundsMax.X);
 	TargetPos.Z = FMath::Clamp(TargetPos.Z, CameraBoundsMin.Y, CameraBoundsMax.Y);
-	
-	CameraMain->SetWorldLocation(TargetPos);
+
+	GoalTargetPosition.X = TargetPos.X;
+	GoalTargetPosition.Z = TargetPos.Z;
 }
 
 void UCameraWorldSubsystem::TickUpdateCameraZoom(float DeltaTime)
@@ -65,9 +69,25 @@ void UCameraWorldSubsystem::TickUpdateCameraZoom(float DeltaTime)
 	GreatestDistanceBetweenTargets = (FMath::Lerp(CameraZoomYMin,CameraZoomYMax,CurrentPercentOfDistance));
 
 	FVector TargetPos = FVector(CameraMain->GetComponentLocation().X,GreatestDistanceBetweenTargets,CameraMain->GetComponentLocation().Z);
-
-	CameraMain->SetWorldLocation(TargetPos);
 	
+	GoalTargetPosition.Y = FMath::VInterpTo(CameraMain->GetComponentLocation(),TargetPos,DeltaTime,CameraSettings->SizeDampingFactor).Y;
+}
+
+void UCameraWorldSubsystem::TickUpdateDampingCameraPosition(float DeltaTime)
+{
+	if(CameraMain==nullptr) return;
+	FVector TargetPos = GoalTargetPosition;
+	FVector CurrentPosition = CameraMain->GetComponentLocation();
+	
+
+	// If distance is too small, just set the desired location
+	if(TargetPos.SizeSquared() < UE_KINDA_SMALL_NUMBER)
+	{
+		CameraMain->SetWorldLocation(TargetPos); 
+	}
+
+	CurrentPosition = FMath::VInterpTo(CurrentPosition, TargetPos, DeltaTime,CameraSettings->PositionDampingFactor);
+	CameraMain->SetWorldLocation(CurrentPosition); 
 }
 
 

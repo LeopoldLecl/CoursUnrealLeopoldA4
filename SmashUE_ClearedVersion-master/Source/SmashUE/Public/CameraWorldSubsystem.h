@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
 #include "Subsystems/WorldSubsystem.h"
+#include "CameraSettings.h"
 #include "CameraWorldSubsystem.generated.h"
 
 
@@ -45,11 +46,15 @@ public:
 
 	UPROPERTY()
 	TObjectPtr<UCameraComponent> CameraMain;
+
+	UPROPERTY()
+	TObjectPtr<const UCameraSettings> CameraSettings;
 	
 	void TickUpdateCameraPosition(float DeltaTime);
 
 	void TickUpdateCameraZoom(float DeltaTime);
 
+	void TickUpdateDampingCameraPosition(float DeltaTime);
 
 
 	UCameraComponent* FindCameraByTag(const FName& Tag) const;
@@ -99,6 +104,8 @@ public:
 
 	float InverseLerp(float Start, float End, float Value);
 
+private:
+	FVector GoalTargetPosition = FVector::ZeroVector;
 	
 #pragma endregion
 
