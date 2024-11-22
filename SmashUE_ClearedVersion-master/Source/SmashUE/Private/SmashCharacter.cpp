@@ -3,9 +3,12 @@
 
 #include "SmashCharacter.h"
 
+#include "CameraWorldSubsystem.h"
 #include "EnhancedInputSubsystems.h"
-#include "Kismet/GameplayStatics.h"
-#include "StateMachine/SmashCharacterStateMachine.h"
+#include "SmashCharacterInputData.h"
+#include "EnhancedInputComponent.h"
+#include "SmashCharacterState.h"
+#include "SmashCharacterStateMachine.h"
 
 void ASmashCharacter::CreateStateMachine()
 {
@@ -45,6 +48,7 @@ void ASmashCharacter::BeginPlay()
 	CreateStateMachine();
 	InitStateMachine();
 
+	GetWorld()->GetSubsystem<UCameraWorldSubsystem>()->AddFollowTarget(this);
 }
 
 // Called every frame
@@ -55,7 +59,18 @@ void ASmashCharacter::Tick(float DeltaTime)
 	RotateMeshUsingOrientX();
 }
 
+// Called to bind functionality to input
+void ASmashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	SetupMappingContextIntoController();
+
+	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if(EnhancedInputComponent == nullptr) return;
+
+	BindInputMoveXAxisAndActions(EnhancedInputComponent);
+}
 
 float ASmashCharacter::GetOrientX() const
 {
@@ -89,36 +104,112 @@ void ASmashCharacter::PlayRunAnimMontage()
 	PlayAnimMontage(RunAnimMontage);
 }
 
-void ASmashCharacter::SetupMappingContextIntoController() const
+void ASmashCharacter::PlayJumpAnimMontage()
+{
+	PlayAnimMontage(JumpAnimMontage);
+}
+
+void ASmashCharacter::PlayFallAnimMontage()
+{
+	PlayAnimMontage(FallAnimMontage);
+}
+
+void ASmashCharacter::SetupMappingContextIntoController()
 {
 	APlayerController* PlayerController = Cast<APlayerController>(Controller);
-	if(PlayerController== nullptr)
-	{
-		return;
-	}
+	if(PlayerController == nullptr) return;
 
 	ULocalPlayer* Player = PlayerController->GetLocalPlayer();
-	if(Player == nullptr)
-	{
-		return;
-	}
+	if(Player == nullptr) return;
 
 	UEnhancedInputLocalPlayerSubsystem* InputSystem = Player->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
-	if(InputSystem == nullptr)
-	{
-		return;
-	}
+	if(InputSystem == nullptr) return;
+
 	InputSystem->AddMappingContext(InputMappingContext,0);
 }
 
-void ASmashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+float ASmashCharacter::GetInputMoveX() const
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	SetupMappingContextIntoController();
+	return  InputMoveX;
 }
 
-// void USmashCharacterState::StateInit(USmashCharacterState* InStateMachine)
-// {
-// 		StateMachine = InStateMachine;
-// }
+float ASmashCharacter::GetInputMoveY() const
+{
+	return InputJump;
+}
+
+void ASmashCharacter::OnInputMoveXFast(const FInputActionValue& InputActionValue)
+{
+	InputMoveX = InputActionValue.Get<float>();
+	InputMoveXFastEvent.Broadcast(InputMoveX);
+}
+
+void ASmashCharacter::BindInputMoveXAxisAndActions(UEnhancedInputComponent* EnhancedInputComponent)
+{
+	if(InputData == nullptr) return;
+
+	if(InputData->InputActionMoveX)
+	{
+		EnhancedInputComponent->BindAction(
+			InputData->InputActionMoveX,
+			ETriggerEvent::Started,
+			this,
+			&ASmashCharacter::OnInputMoveX);
+
+		EnhancedInputComponent->BindAction(
+			InputData->InputActionMoveX,
+			ETriggerEvent::Triggered,
+			this,
+			&ASmashCharacter::OnInputMoveX);
+
+		EnhancedInputComponent->BindAction(
+			InputData->InputActionMoveX,
+			ETriggerEvent::Completed,
+			this,
+			&ASmashCharacter::OnInputMoveX);
+	}
+
+	if(InputData->InputActionMoveXFast)
+	{
+		EnhancedInputComponent->BindAction(
+			InputData->InputActionMoveXFast,
+			ETriggerEvent::Triggered,
+			this,
+			&ASmashCharacter::OnInputMoveXFast);
+	}
+
+	if(InputData->InputActionJump)
+	{
+		EnhancedInputComponent->BindAction(
+			InputData->InputActionJump,
+			ETriggerEvent::Started,
+			this,
+			&ASmashCharacter::OnInputJump
+		);
+	}
+
+	
+}
+
+void ASmashCharacter::OnInputMoveX(const FInputActionValue& InputActionValue)
+{
+		InputMoveX = InputActionValue.Get<float>();
+}
+
+void ASmashCharacter::OnInputJump(const FInputActionValue& InputActionValue)
+{
+	InputJump = InputActionValue.Get<bool>();
+	InputJumpEvent.Broadcast(InputJump);
+}
+
+FVector ASmashCharacter::GetFollowPosition()
+{
+	return GetActorLocation();
+}
+
+bool ASmashCharacter::IsFollowable()
+{
+	return true;
+}
+
 

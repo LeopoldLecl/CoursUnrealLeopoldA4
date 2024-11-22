@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StateMachine/SmashCharacterStateID.h"
+#include "SmashCharacterSettings.h"
+#include "SmashCharacterStateID.h"
 #include "GameFramework/Actor.h"
 #include "SmashCharacterState.generated.h"
+class USmashCharacterSettings;
 class ASmashCharacter;
 class USmashCharacterStateMachine;
 
@@ -20,13 +22,14 @@ public:
 
 	virtual ESmashCharacterStateID GetStateID();
 
-	virtual void StateInit(USmashCharacterStateMachine* InStateMachine);
+	virtual void StateInit(USmashCharacterStateMachine* InStateMachine,const USmashCharacterSettings* InCharacterSettings);
 
 	virtual void StateEnter(ESmashCharacterStateID PreviousStateID);
 
 	virtual void StateExit(ESmashCharacterStateID NextStateID);
 
 	virtual void StateTick(float DeltaTime);
+
 	
 
 	protected:
@@ -34,4 +37,7 @@ public:
 	TObjectPtr<ASmashCharacter> Character;
 	UPROPERTY()
 	TObjectPtr<USmashCharacterStateMachine> StateMachine;
+	UPROPERTY();
+	TObjectPtr<USmashCharacterSettings> CharacterSettings;
+	
 };

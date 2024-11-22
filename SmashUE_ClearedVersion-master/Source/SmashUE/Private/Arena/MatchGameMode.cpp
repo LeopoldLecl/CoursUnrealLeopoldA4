@@ -1,14 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Arena/MatchGameMode.h"
+#include "MatchGameMode.h"
 
-#include "Arena/ArenaSettings.h"
+#include "ArenaSettings.h"
 #include "SmashCharacter.h"
 #include "SmashCharacterSettings.h"
 #include "Arena/ArenaPlayerStart.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "InputMappingContext.h"
+#include "SmashCharacterInputData.h"
+class UInputMappingContext;
+class USmashCharacterInputData;
 
 void AMatchGameMode::BeginPlay()
 {
@@ -37,23 +40,16 @@ void AMatchGameMode::BeginPlay()
 USmashCharacterInputData* AMatchGameMode::LoadInputDataFromConfig()
 {
 	const USmashCharacterSettings* CharacterSettings = GetDefault<USmashCharacterSettings>();
-	if(CharacterSettings==nullptr)
-	{
-		return nullptr;
-	}
+	if (CharacterSettings == nullptr) return nullptr;
 	return CharacterSettings->InputData.LoadSynchronous();
 }
 
 UInputMappingContext* AMatchGameMode::LoadInputMappingContextFromConfig()
 {
 	const USmashCharacterSettings* CharacterSettings = GetDefault<USmashCharacterSettings>();
-	if(CharacterSettings==nullptr)
-	{
-		return nullptr;
-	}
+	if (CharacterSettings == nullptr) return nullptr;
 	return CharacterSettings->InputMappingContext.LoadSynchronous();
 }
-
 
 void AMatchGameMode::FindPlayersStartActorsInArena(TArray<AArenaPlayerStart*>& ResultsActors)
 {
@@ -96,12 +92,10 @@ TSubclassOf<ASmashCharacter> AMatchGameMode::GetSmashCharacterClassFromInputType
 
 void AMatchGameMode::SpawnCharacters(const TArray<AArenaPlayerStart*>& SpawnPoints)
 {
+	USmashCharacterInputData* InputData = LoadInputDataFromConfig();
+	UInputMappingContext* InputMappingContext = LoadInputMappingContextFromConfig();
 	for (AArenaPlayerStart* SpawnPoint : SpawnPoints)
 	{
-		USmashCharacterInputData* InputData = LoadInputDataFromConfig();
-		UInputMappingContext* InputMappingContext = LoadInputMappingContextFromConfig();
-
-		
 		EAutoReceiveInput::Type InputType = SpawnPoint->AutoReceiveInput.GetValue();
 		TSubclassOf<ASmashCharacter> SmashCharacterClass = GetSmashCharacterClassFromInputType(InputType);
 		if (SmashCharacterClass == nullptr)

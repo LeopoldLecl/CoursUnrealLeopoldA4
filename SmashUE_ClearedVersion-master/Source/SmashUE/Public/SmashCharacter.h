@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CameraFollowTarget.h"
+#include "InputActionValue.h"
 #include "GameFramework/Character.h"
 #include "SmashCharacter.generated.h"
 
@@ -11,7 +13,7 @@ class UInputMappingContext;
 class USmashCharacterStateMachine;
 class UAnimMontage;
 UCLASS()
-class SMASHUE_API ASmashCharacter : public ACharacter
+class SMASHUE_API ASmashCharacter : public ACharacter,public ICameraFollowTarget
 {
 	GENERATED_BODY()
 
@@ -23,8 +25,9 @@ class SMASHUE_API ASmashCharacter : public ACharacter
 	void InitStateMachine();
 
 	void TickStateMachine(float DeltaTime) const;
+	bool IsFallingFast() const;
 
-	protected:
+protected:
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<USmashCharacterStateMachine> StateMachine;
 #pragma endregion
@@ -62,7 +65,9 @@ protected:
 	void RotateMeshUsingOrientX() const;
 
 #pragma endregion
-	
+
+
+#pragma region Movement / Anim / State Machine
 	private:
 
 	UPROPERTY(EditDefaultsOnly, Category="Animation")
@@ -71,11 +76,15 @@ protected:
 	UAnimMontage* WalkAnimMontage;
 	UPROPERTY(EditDefaultsOnly, Category="Animation")
 	UAnimMontage* RunAnimMontage;
+	UPROPERTY(EditDefaultsOnly, Category="Animation")
+	UAnimMontage* JumpAnimMontage;
+	UPROPERTY(EditDefaultsOnly, Category="Animation")
+	UAnimMontage* FallAnimMontage;
 
 
-#pragma region StateMachine et player stats
-public:	
 
+	
+public:
 	UPROPERTY(EditDefaultsOnly, Category="Player Stats")
 	float MoveSpeedMax = 600.f;
 	UPROPERTY(EditDefaultsOnly, Category="Player Stats")
@@ -83,20 +92,57 @@ public:
 	void PlayWalkAnimMontage();
 	void PlayIdleAnimMontage();
 	void PlayRunAnimMontage();
+	void PlayJumpAnimMontage();
+	void PlayFallAnimMontage();
+
 #pragma endregion
 
-	#pragma region Input data / mapping context
 
-protected:
-	void SetupMappingContextIntoController() const;
-	
-public:
+#pragma region InputData / Mapping context
 
+	public:
 	UPROPERTY()
 	TObjectPtr<UInputMappingContext> InputMappingContext;
 
 	UPROPERTY()
 	TObjectPtr<USmashCharacterInputData> InputData;
+
+	protected:
+	void SetupMappingContextIntoController();
+
+
 	
 #pragma endregion
+
+#pragma region Input X
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInputMoveXEvent, float, InputMoveX);
+	
+	public:
+	float GetInputMoveX() const;
+	float GetInputMoveY() const;
+
+	UPROPERTY()
+	FInputMoveXEvent InputMoveXFastEvent;
+	FInputMoveXEvent InputJumpEvent;
+
+protected:
+	UPROPERTY()
+	float InputMoveX = 0.f;
+	bool InputJump = false;
+
+	private:
+	void OnInputMoveXFast(const FInputActionValue& InputActionValue);
+	void BindInputMoveXAxisAndActions(UEnhancedInputComponent* EnhancedInputComponent);
+	
+	void OnInputMoveX(const FInputActionValue& InputActionValue);
+	void OnInputJump(const FInputActionValue& InputActionValue);
+
+public:
+	virtual FVector GetFollowPosition() override;
+	virtual bool IsFollowable() override;
+
+private:
+#pragma endregion
+	
 };

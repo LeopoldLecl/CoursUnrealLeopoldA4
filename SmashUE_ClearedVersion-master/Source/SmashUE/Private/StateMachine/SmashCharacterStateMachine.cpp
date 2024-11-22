@@ -90,8 +90,9 @@ void USmashCharacterStateMachine::FindStates()
 
 void USmashCharacterStateMachine::InitStates()
 {
+	const USmashCharacterSettings* Settings = GetDefault<USmashCharacterSettings>();
 	for (USmashCharacterState* State : AllStates)
 	{
-		State->StateInit(this);
+		State->StateInit(this,Settings);
 	}
 }

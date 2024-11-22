@@ -3,20 +3,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Arena/MatchGameMode.h"
 #include "Engine/DeveloperSettings.h"
 #include "SmashCharacterSettings.generated.h"
 
 
-UCLASS(Config = Game,DefaultConfig,meta = (DisplayName = "Smash Character Settings"))
+class UInputMappingContext;
+class USmashCharacterInputData;
+
+UCLASS(Config=Game, DefaultConfig, meta = (DisplayName="Smash Character Settings"))
 class SMASHUE_API USmashCharacterSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
 
 	public:
-	UPROPERTY(config, EditAnywhere, Category = "Inputs")
+	UPROPERTY(Config,EditAnywhere, Category="Inputs")
 	TSoftObjectPtr<USmashCharacterInputData> InputData;
 
-	UPROPERTY(config, EditAnywhere, Category = "Inputs")
+	UPROPERTY(Config,EditAnywhere, Category="Inputs")
 	TSoftObjectPtr<UInputMappingContext> InputMappingContext;
+
+	UPROPERTY(Config,EditAnywhere, Category="Inputs")
+	float InputMoveXThreshold = 0.1f;
 };

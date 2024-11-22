@@ -12,6 +12,11 @@ class SMASHUE_API USmashCharacterStateRun : public USmashCharacterState
 	GENERATED_BODY()
 
 public:
+
+	UFUNCTION()
+	void OnInputJump(float InputJump);
+	
+	
 	virtual  ESmashCharacterStateID GetStateID() override;
 
 	virtual void StateEnter(ESmashCharacterStateID PreviousStateID) override;

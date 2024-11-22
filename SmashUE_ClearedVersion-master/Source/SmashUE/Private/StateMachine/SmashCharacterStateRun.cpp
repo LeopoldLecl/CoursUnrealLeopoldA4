@@ -2,9 +2,17 @@
 #include "StateMachine/SmashCharacterStateRun.h"
 
 #include "SmashCharacter.h"
+#include "SmashCharacterSettings.h"
+#include "SmashCharacterStateMachine.h"
+#include "SmashCharacterStateWalk.h"
 #include "GeometryCollection/GeometryCollectionParticlesData.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+
+void USmashCharacterStateRun::OnInputJump(float InputJump)
+{
+	StateMachine->ChangeState(ESmashCharacterStateID::Jump);
+}
 
 ESmashCharacterStateID USmashCharacterStateRun::GetStateID()
 {
@@ -16,13 +24,16 @@ void USmashCharacterStateRun::StateEnter(ESmashCharacterStateID PreviousStateID)
 	Super::StateEnter(PreviousStateID);
 
 	Character->PlayRunAnimMontage();
-
+	Character->GetCharacterMovement()->MaxWalkSpeed = Character->RunMoveSpeedMax;
 	GEngine->AddOnScreenDebugMessage(
 		-1,
 		3.f,
 		FColor::Green,
 		TEXT("Enter StateRun")
 	);
+
+	Character->InputJumpEvent.AddDynamic(this,&USmashCharacterStateRun::OnInputJump);
+
 }
 
 void USmashCharacterStateRun::StateExit(ESmashCharacterStateID NextStateID)
@@ -35,30 +46,27 @@ void USmashCharacterStateRun::StateExit(ESmashCharacterStateID NextStateID)
 		FColor::Red,
 		TEXT("Exit StateRun")
 	);
+
+	Character->InputJumpEvent.RemoveDynamic(this,&USmashCharacterStateRun::OnInputJump);
+
 }
 
 void USmashCharacterStateRun::StateTick(float DeltaTime)
 {
 	Super::StateTick(DeltaTime);
 
-	if (Character && Character->GetCharacterMovement())
+	if(FMath::Abs(Character->GetInputMoveX())<CharacterSettings->InputMoveXThreshold)
 	{
-		FVector CurrentVelocity = Character->GetVelocity();
-		float CurrentSpeed = CurrentVelocity.Size();
-
-		if (CurrentSpeed < Character->RunMoveSpeedMax)
-		{
-			FVector Direction = Character->GetActorForwardVector();
-			Character->AddMovementInput(Direction, 1.0f);
-		}
-
+		StateMachine->ChangeState(ESmashCharacterStateID::Idle);
 	}
-	GEngine->AddOnScreenDebugMessage(
-		-1,
-		3.f,
-		FColor::Green,
-		TEXT("Tick State Run")
-		);
+	else
+	{
+		Character->SetOrientX(Character->GetInputMoveX());
+		Character->AddMovementInput(FVector::ForwardVector,Character->GetOrientX());
+	}
+
+	
+
 }
 
 
