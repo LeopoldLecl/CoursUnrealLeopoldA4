@@ -13,6 +13,11 @@
 				"DeveloperSettings",
 				"CoreUObject"
 			]
+		},
+		{
+			"Name": "LocalMultiplayer",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
