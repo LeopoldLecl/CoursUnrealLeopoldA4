@@ -20,7 +20,9 @@ public class LocalMultiplayer : ModuleRules
                 "Engine",
                 "Slate",
                 "SlateCore",
-                "DeveloperSettings"
+                "DeveloperSettings",
+                "InputCore",
+                "EnhancedInput"
             }
         );
     }

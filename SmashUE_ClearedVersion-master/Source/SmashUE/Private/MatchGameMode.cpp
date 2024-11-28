@@ -9,6 +9,7 @@
 #include "Arena/ArenaPlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "InputMappingContext.h"
+#include "LocalMultiplayerSubsystem.h"
 #include "SmashCharacterInputData.h"
 class UInputMappingContext;
 class USmashCharacterInputData;
@@ -17,6 +18,7 @@ void AMatchGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CreateAndInitPlayer();
 
 	TArray<AArenaPlayerStart*> PlayerStartsPoints;
 	FindPlayersStartActorsInArena(PlayerStartsPoints);
@@ -87,6 +89,17 @@ TSubclassOf<ASmashCharacter> AMatchGameMode::GetSmashCharacterClassFromInputType
 	default:
 		return nullptr;
 	}
+}
+
+void AMatchGameMode::CreateAndInitPlayer() const
+{
+	UGameInstance* GameInstance = GetWorld()->GetGameInstance();
+	if (GameInstance == nullptr) return;
+	
+	ULocalMultiplayerSubsystem* LocalMultiplayerSubsystem = GameInstance->GetSubsystem<ULocalMultiplayerSubsystem>();
+	if (LocalMultiplayerSubsystem == nullptr) return;
+
+	LocalMultiplayerSubsystem->CreateAndInitPlayer(ELocalMultiplayerInputMappingType::InGame);
 }
 
 

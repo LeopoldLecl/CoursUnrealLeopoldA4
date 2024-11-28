@@ -26,7 +26,7 @@ public:
 
 	int GetAssignedPlayerIndexFromGamePadDeviceID(int DeviceID);
 
-	int AssignPlayerToGamePadDeviceID(int DeviceID);
+	int AssignNewPlayerToGamePadDeviceID(int DeviceID);
 
 	void AssignGamepadInputMapping(int PlayerIndex, ELocalMultiplayerInputMappingType MappingType)const;
 

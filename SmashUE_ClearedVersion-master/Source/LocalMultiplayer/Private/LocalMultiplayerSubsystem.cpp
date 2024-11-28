@@ -21,7 +21,7 @@ void ULocalMultiplayerSubsystem::CreateAndInitPlayer(ELocalMultiplayerInputMappi
 
 	for (int i = 0; i < Settings->NbMaxGamepads; ++i)
 	{
-		AssignPlayerToGamePadDeviceID(i);
+		AssignNewPlayerToGamePadDeviceID(i);
 	}
 }
 
@@ -38,12 +38,13 @@ int ULocalMultiplayerSubsystem::AssignNewPlayerToKeyboardProfile(int KeyboardPro
 {
 	if (PlayerIndexFromKeyboardProfileIndex.Contains(KeyboardProfileIndex))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Keyboard profile %d is already assigned."), KeyboardProfileIndex);
 		return PlayerIndexFromKeyboardProfileIndex[KeyboardProfileIndex];
 	}
 
-	int NewPlayerIndex = LastAssignedPlayerIndex++;
+	int32 NewPlayerIndex = LastAssignedPlayerIndex++;
 	PlayerIndexFromKeyboardProfileIndex.Add(KeyboardProfileIndex, NewPlayerIndex);
+
+	UE_LOG(LogTemp, Log, TEXT("Assigned new PlayerIndex %d to Keyboard Profile %d"), NewPlayerIndex, KeyboardProfileIndex);
 
 	return NewPlayerIndex;
 }
@@ -84,7 +85,7 @@ int ULocalMultiplayerSubsystem::GetAssignedPlayerIndexFromGamePadDeviceID(int De
 	return -1;
 }
 
-int ULocalMultiplayerSubsystem::AssignPlayerToGamePadDeviceID(int DeviceID)
+int ULocalMultiplayerSubsystem::AssignNewPlayerToGamePadDeviceID(int DeviceID)
 {
 	if (PlayerIndexFromGamepadProfileIndex.Contains(DeviceID))
 	{

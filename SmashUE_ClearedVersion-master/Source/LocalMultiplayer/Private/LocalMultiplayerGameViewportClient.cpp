@@ -3,6 +3,9 @@
 
 #include "LocalMultiplayerGameViewportClient.h"
 
+#include "EnhancedInputSubsystems.h"
+#include "LocalMultiplayerSubsystem.h"
+
 void ULocalMultiplayerGameViewportClient::PostInitProperties()
 {
 	Super::PostInitProperties();
@@ -13,54 +16,68 @@ void ULocalMultiplayerGameViewportClient::PostInitProperties()
 
 bool ULocalMultiplayerGameViewportClient::InputKey(const FInputKeyEventArgs& EventArgs)
 {
-	// Super pour gérer l'entrée de base
-	if (Super::InputKey(EventArgs))
-	{
-		return true;
-	}
+    if (EventArgs.Event == IE_Pressed) 
+    {
+        ULocalMultiplayerSubsystem* MultiplayerSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<ULocalMultiplayerSubsystem>();
+        if (!MultiplayerSubsystem)
+        {
+            UE_LOG(LogTemp, Error, TEXT("LocalMultiplayerSubsystem not found."));
+            return Super::InputKey(EventArgs);
+        }
 
-	// Détection de l'entrée clavier ou manette
-	FKey Key = EventArgs.Key;
-	FInputDeviceId DeviceId = EventArgs.InputDeviceId;
+        const ULocalMultiplayerSettings* Settings = GetDefault<ULocalMultiplayerSettings>();
+        if (!Settings)
+        {
+            UE_LOG(LogTemp, Error, TEXT("LocalMultiplayerSettings not found."));
+            return Super::InputKey(EventArgs);
+        }
 
-	if (Key.IsGamepadKey())
-	{
-		UE_LOG(LogTemp, Log, TEXT("Gamepad key detected: %s on DeviceId %d"), *Key.GetFName().ToString(), DeviceId.GetId());
+        const FKey& PressedKey = EventArgs.Key;
+        
+        const int32 KeyboardProfileIndex = Settings->FindKeyboardProfileIndexFromKey(
+            PressedKey, ELocalMultiplayerInputMappingType::InGame);
 
-		// Assigner un PlayerIndex pour ce DeviceId
-		// Exemple : liaison entre l'identifiant et un PlayerIndex à travers le système
-		// Appel à une méthode dans votre Subsystem pour gérer cette logique
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("Keyboard key detected: %s"), *Key.GetFName().ToString());
+        if (KeyboardProfileIndex == -1)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("No keyboard profile found for key %s"), *PressedKey.ToString());
+            return Super::InputKey(EventArgs);
+        }
 
-		// Gestion des touches clavier pour attribuer des PlayerIndex
-	}
+        const int32 PlayerIndex = MultiplayerSubsystem->GetAssignedPlayerIndexFromKeyboardProfileIndex(KeyboardProfileIndex);
 
-	return true;}
+        if (PlayerIndex == -1) 
+        {
+            const int32 NewPlayerIndex = MultiplayerSubsystem->AssignNewPlayerToKeyboardProfile(KeyboardProfileIndex);
+            UE_LOG(LogTemp, Log, TEXT("New player assigned: %d for key %s"), NewPlayerIndex, *PressedKey.ToString());
+        }
+    }
+
+    return Super::InputKey(EventArgs);
+}
 
 bool ULocalMultiplayerGameViewportClient::InputAxis(FViewport* InViewport, FInputDeviceId InputDeviceId, FKey Key,float Delta, float DeltaTime, int32 NumSamples, bool bGamepad)
 {
-	if (Super::InputAxis(InViewport, InputDeviceId, Key, Delta, DeltaTime, NumSamples, bGamepad))
-	{
-		return true;
-	}
+    if (bGamepad && FMath::Abs(Delta) > KINDA_SMALL_NUMBER) 
+    {
+        ULocalMultiplayerSubsystem* MultiplayerSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<ULocalMultiplayerSubsystem>();
+        if (!MultiplayerSubsystem)
+        {
+            UE_LOG(LogTemp, Error, TEXT("LocalMultiplayerSubsystem not found."));
+            return Super::InputAxis(InViewport, InputDeviceId, Key, Delta, DeltaTime, NumSamples, bGamepad);
+        }
 
-	if (bGamepad)
-	{
-		UE_LOG(LogTemp, Log, TEXT("Gamepad axis detected: %s with Delta: %f on DeviceId %d"), *Key.GetFName().ToString(), Delta, InputDeviceId.GetId());
+        int32 DeviceId = InputDeviceId.GetId(); 
+        
+        const int32 PlayerIndex = MultiplayerSubsystem->GetAssignedPlayerIndexFromGamePadDeviceID(DeviceId);
 
-		// Logique pour lier cet axe à un PlayerIndex
-		// Exemple : récupérer ou assigner un joueur à ce périphérique
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("Keyboard axis detected: %s with Delta: %f"), *Key.GetFName().ToString(), Delta);
+        if (PlayerIndex == -1)
+        {
+            const int32 NewPlayerIndex = MultiplayerSubsystem->AssignNewPlayerToGamePadDeviceID(DeviceId);
+            UE_LOG(LogTemp, Log, TEXT("New player assigned: %d for Gamepad Device ID: %d"), NewPlayerIndex, DeviceId);
+        }
+    }
 
-		// Logique pour gérer les axes clavier, si applicable
-	}
-
-	return true;}
+    return Super::InputAxis(InViewport, InputDeviceId, Key, Delta, DeltaTime, NumSamples, bGamepad);
+}
 
 
