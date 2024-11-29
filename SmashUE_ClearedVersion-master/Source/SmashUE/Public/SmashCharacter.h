@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "SmashCharacter.generated.h"
 
+class UBuffComponent;
 class USmashCharacterInputData;
 class UInputMappingContext;
 class USmashCharacterStateMachine;
@@ -23,6 +24,8 @@ class SMASHUE_API ASmashCharacter : public ACharacter,public ICameraFollowTarget
 	void CreateStateMachine();
 
 	void InitStateMachine();
+	void ApplyMetalBuff();
+	void ChangeMaterial(UMaterialInterface* NewMaterial);
 
 	void TickStateMachine(float DeltaTime) const;
 	bool IsFallingFast() const;
@@ -144,5 +147,10 @@ public:
 
 private:
 #pragma endregion
+
+#pragma region Buff
+public:
+	UBuffComponent* BuffComponent;
 	
+#pragma endregion
 };

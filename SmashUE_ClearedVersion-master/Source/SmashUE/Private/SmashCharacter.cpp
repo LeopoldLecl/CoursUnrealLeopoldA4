@@ -3,10 +3,12 @@
 
 #include "SmashCharacter.h"
 
+#include "BuffComponent.h"
 #include "CameraWorldSubsystem.h"
 #include "EnhancedInputSubsystems.h"
 #include "SmashCharacterInputData.h"
 #include "EnhancedInputComponent.h"
+#include "MetalBuff.h"
 #include "SmashCharacterState.h"
 #include "SmashCharacterStateMachine.h"
 
@@ -22,6 +24,23 @@ void ASmashCharacter::InitStateMachine()
 		return;
 	}
 	StateMachine->Init(this);
+}
+
+void ASmashCharacter::ApplyMetalBuff()
+{
+	UMetalBuff* NewBuff = NewObject<UMetalBuff>();
+	NewBuff->Initialize(EBuffType::Metal, 10.0f, this);
+	BuffComponent->ApplyBuff(NewBuff);
+}
+
+
+void ASmashCharacter::ChangeMaterial(UMaterialInterface* NewMaterial)
+{
+	if (NewMaterial && GetMesh())
+	{
+		// Change le matériau de l'index 0 (par défaut, c'est souvent l'index principal)
+		GetMesh()->SetMaterial(0, NewMaterial);
+	}
 }
 
 void ASmashCharacter::TickStateMachine(float DeltaTime) const
@@ -47,7 +66,8 @@ void ASmashCharacter::BeginPlay()
 	Super::BeginPlay();
 	CreateStateMachine();
 	InitStateMachine();
-
+	BuffComponent = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
+	//ApplyMetalBuff();
 	GetWorld()->GetSubsystem<UCameraWorldSubsystem>()->AddFollowTarget(this);
 }
 
